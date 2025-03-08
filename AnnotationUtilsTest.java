@@ -407,11 +407,10 @@ public class AnnotationUtilsTest extends AbstractLangTest {
     }
 
     @Test
+    @Test
     public void testGeneratedAnnotationEquivalentToRealAnnotation() {
         assertTimeoutPreemptively(Duration.ofSeconds(666L), () -> {
-            final Test real = getClass().getDeclaredMethod(
-                    "testGeneratedAnnotationEquivalentToRealAnnotation").getAnnotation(Test.class);
-
+            final Test real = getClass().getDeclaredMethod("testGeneratedAnnotationEquivalentToRealAnnotation").getAnnotation(Test.class);
             final InvocationHandler generatedTestInvocationHandler = (proxy, method, args) -> {
                 if ("equals".equals(method.getName()) && method.getParameterTypes().length == 1) {
                     return Boolean.valueOf(proxy == args[0]);
@@ -424,18 +423,12 @@ public class AnnotationUtilsTest extends AbstractLangTest {
                 }
                 return method.invoke(real, args);
             };
-
-            final Test generated = (Test) Proxy.newProxyInstance(Thread.currentThread()
-                            .getContextClassLoader(), new Class[]{Test.class},
-                    generatedTestInvocationHandler);
+            final Test generated = (Test) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[]{Test.class}, generatedTestInvocationHandler);
             assertEquals(real, generated);
             assertNotEquals(generated, real);
             assertTrue(AnnotationUtils.equals(generated, real));
             assertTrue(AnnotationUtils.equals(real, generated));
-
-            final Test generated2 = (Test) Proxy.newProxyInstance(Thread.currentThread()
-                            .getContextClassLoader(), new Class[]{Test.class},
-                    generatedTestInvocationHandler);
+            final Test generated2 = (Test) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[]{Test.class}, generatedTestInvocationHandler);
             assertNotEquals(generated, generated2);
             assertNotEquals(generated2, generated);
             assertTrue(AnnotationUtils.equals(generated, generated2));
